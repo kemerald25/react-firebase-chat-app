@@ -8,6 +8,7 @@ import {
   onSnapshot,
   query,
   orderBy,
+  getDocs,
 } from "firebase/firestore";
 
 import "../styles/Chat.css";
@@ -23,17 +24,30 @@ export const Chat = ({ room }) => {
       where("room", "==", room),
       orderBy("createdAt")
     );
-    const unsuscribe = onSnapshot(queryMessages, (snapshot) => {
-      let messages = [];
-      snapshot.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
-      });
-      console.log(messages);
+
+    // Fetch initial set of messages
+    const initialMessages = async () => {
+      const snapshot = await getDocs(queryMessages);
+      const messages = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
       setMessages(messages);
+    };
+
+    initialMessages();
+
+    // Listen for new messages
+    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
+      let newMessages = [];
+      snapshot.forEach((doc) => {
+        newMessages.push({ ...doc.data(), id: doc.id });
+      });
+      setMessages(newMessages);
     });
 
-    return () => unsuscribe();
-  }, []);
+    return () => unsubscribe();
+  }, [room, messagesRef]); // Include 'room' and 'messagesRef' in the dependency array
 
   const handleSubmit = async (event) => {
     event.preventDefault();
