@@ -28,11 +28,11 @@ export const Chat = ({ room }) => {
     // Fetch initial set of messages
     const initialMessages = async () => {
       const snapshot = await getDocs(queryMessages);
-      const messages = snapshot.docs.map((doc) => ({
+      const initialMessagesData = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      setMessages(messages);
+      setMessages(initialMessagesData);
     };
 
     initialMessages();
@@ -47,7 +47,7 @@ export const Chat = ({ room }) => {
     });
 
     return () => unsubscribe();
-  }, [room]); // Include 'room' in the dependency array
+  }, [room]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
