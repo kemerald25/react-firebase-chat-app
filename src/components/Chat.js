@@ -47,7 +47,7 @@ export const Chat = ({ room }) => {
     });
 
     return () => unsubscribe();
-  }, [room, messagesRef]); // Include 'room' and 'messagesRef' in the dependency array
+  }, [room]); // Include 'room' in the dependency array
 
   const handleSubmit = async (event) => {
     event.preventDefault();
